@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import { Link } from 'react-router';
+import axios from 'axios';
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
@@ -10,19 +11,31 @@ const App = () => {
 
   const fetchUsers = async () => {
     setLoading(true);
-    const response = await fetch(`${backendUrl}/users`);
-    const data = await response.json();
-    setUsers(data);
+    try {
+      const response = await axios.get(`${backendUrl}/users`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
     setLoading(false);
   };
 
   const deleteUser = async (id) => {
     setLoading(true);
-    const response = await fetch(`${backendUrl}/users/delete/${id}`, {
-      method: 'DELETE',
-    });
-    if (response.ok) {
+    try {
+      await axios.delete(`${backendUrl}/users/delete/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setUsers(users.filter((user) => user.id !== id));
+      alert("User deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting user:", error);
     }
     setLoading(false);
   };
@@ -34,12 +47,11 @@ const App = () => {
   return (
     <>
       <Header />
-      <div className="">
-        
+      <div>
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <div className="grid grid-cols-1 gap-4 p-10 bg-amber-200 rounded-2xl  w-1/2 m-auto mt-10">
+          <div className="grid grid-cols-1 gap-4 p-10 bg-amber-200 rounded-2xl w-1/2 m-auto mt-10">
             <h1 className="text-2xl font-bold flex justify-center">All Users</h1>
             {users.map((user) => (
               <div key={user.id} className="p-4 border rounded bg-amber-100 shadow-md">
