@@ -1,11 +1,5 @@
-const users = [
-  {
-    id: 1,
-    name: "Juveria",
-    age: "20",
-  },
-];
-
+const Users = require('../models/userModel')
+const multer  = require('multer')
 
 //get all users
 function getAllUsers(req, res) {
@@ -31,6 +25,12 @@ function addUser(req, res) {
   users.push(user);
   res.json(users);
 }
+
+//upload img
+function uploadImg(req, res) {
+  res.json({file : req.file})
+}
+
 
 //update
 function updateUser(req, res) {
@@ -65,4 +65,5 @@ module.exports = {
   addUser,
   updateUser,
   deleteUser,
+  uploadImg
 };
